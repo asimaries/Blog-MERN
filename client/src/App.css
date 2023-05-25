@@ -1,0 +1,115 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: aliceblue;
+}
+
+main {
+  padding: 10px;
+  max-width: 800px;
+  margin: 0 auto;
+
+}
+
+/* HEADER */
+header {
+  display: flex;
+  justify-content: space-between;
+  font-size: large;
+  margin-bottom: 50px;
+}
+
+header a {
+  color: inherit;
+}
+
+header a.logo {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+header nav {
+  display: flex;
+  gap: 10px;
+}
+
+/* POST */
+.post {
+  display: flex;
+  /* gap: 10px; */
+  height: 300px;
+  border: 1px solid white;
+  border-radius: 10px;
+  background-color: #242424;
+  margin: 5px;
+  /* padding: 10px; */
+}
+
+.post img {
+  margin: 10px;
+  width: 280px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.post .post-info {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.post .post-info .content-fade {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+}
+
+.post .meta-info {
+  display: flex;
+  justify-content: space-between;
+}
+
+.post .meta-info p {
+  font-size: small;
+}
+
+/* LOGIN */
+
+form.loginForm,
+form.signupForm {
+  /* background-color: black; */
+  max-width: 800px;
+  margin: 0 auto;
+}
+form label {
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+  padding: 5px;
+
+}
+form input {
+  display: block;
+  margin-bottom: 5px;
+  width: 100%;
+  padding: 5px;
+  border: 0;
+  background-color: white;
+}
+form button {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+}
+
+form h1{
+  text-align: center;
+}
+
