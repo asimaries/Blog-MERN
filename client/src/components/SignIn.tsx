@@ -1,44 +1,36 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 
-export default function SignUp() {
+export default function SignIn() {
 
-  const [name, setName] = useState<string>('')
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [redirect, setRedirect] = useState<boolean>(false)
 
-  async function signup(e: React.FormEvent) {
+  async function signin(e: React.FormEvent) {
     e.preventDefault()
-    const response: Response | any = await fetch('http://localhost:7000/auth/signup', {
+    const response: Response | any = await fetch('http://localhost:7000/auth/signin', {
       method: 'POST',
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ email, password }),
       headers: { 'Content-Type': 'application/json' },
       credentials: "include",
     })
-    const message = await response.json();
+    const error = await response.json();
     if (response.status === 200) {
-      alert(message.message)
       setRedirect(true)
     }
-    else alert(message.error)
+    else {
+      alert(error.error)
+    }
   }
 
   if (redirect)
-    return <Navigate to={'/signin'} />
+    return <Navigate to={'/'} />
 
   return (
     <>
-      <form className="signupForm" onSubmit={signup}>
-        <h1>Signup</h1>
-        <label htmlFor={"name"}>Name
-          <input type="text"
-            name="name"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => { setName(e.target.value) }} />
-        </label>
-
+      <form action="" className="signinForm" onSubmit={signin}>
+        <h1>SignIn</h1>
         <label htmlFor={"email"} >Email
           <input type="text"
             name="email"
@@ -54,7 +46,7 @@ export default function SignUp() {
             value={password}
             onChange={(e) => { setPassword(e.target.value) }} />
         </label>
-        <button>Sign Up</button>
+        <button>SignIn</button>
       </form>
     </>
   )

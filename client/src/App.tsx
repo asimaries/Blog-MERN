@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import './App.css'
 import HomeLayout from './components/HomeLayout';
 import Home from "./components/Home.tsx";
-import Login from "./components/Login.tsx";
+import SignIn from "./components/SignIn.tsx";
 import SignUp from "./components/SignUp.tsx";
 interface PostProp {
   imageURL: string,
@@ -35,7 +35,7 @@ function App() {
     <Routes>
       <Route element={<HomeLayout />} >
         <Route path={'/'} element={<Home post={post} />} />
-        <Route path={'login'} element={<Login />} />
+        <Route path={'signin'} element={<SignIn />} />
         <Route path={'signup'} element={<SignUp />} />
       </Route>
     </Routes>

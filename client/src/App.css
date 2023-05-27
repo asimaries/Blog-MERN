@@ -80,9 +80,9 @@ header nav {
   font-size: small;
 }
 
-/* LOGIN */
+/* SIGNIN */
 
-form.loginForm,
+form.signinForm,
 form.signupForm {
   /* background-color: black; */
   max-width: 800px;
