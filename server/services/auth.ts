@@ -6,13 +6,13 @@ const SECRET_KEY:JWT.Secret = process.env.SECRET_KEY as string;
 function createToken(user: IUser): string {
   const payload = {
     _id: user._id,
-    email: user.email,
+    account: user.account,
     name: user.name,
     role: user.role,
-    profileImageURL: user.profileImageURL,
+    avatar: user.avatar,
   }
   const options: SignOptions = {
-    expiresIn: 60
+    expiresIn: "1d"
   }
   const token = JWT.sign(payload, SECRET_KEY, options)
   return token;

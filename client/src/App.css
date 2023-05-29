@@ -45,7 +45,7 @@ header nav {
   height: 300px;
   border: 1px solid white;
   border-radius: 10px;
-  background-color: #242424;
+  /* background-color: #242424; */
   margin: 5px;
   /* padding: 10px; */
 }
@@ -88,28 +88,33 @@ form.signupForm {
   max-width: 800px;
   margin: 0 auto;
 }
-form label {
+
+form.signupForm label,
+form.signinForm label {
   display: block;
   margin: 0 auto;
   width: 100%;
   padding: 5px;
 
 }
+
 form input {
   display: block;
   margin-bottom: 5px;
   width: 100%;
   padding: 5px;
   border: 0;
-  background-color: white;
+  /* background-color: white; */
 }
+
 form button {
   display: block;
   width: 100%;
   margin: 0 auto;
 }
 
-form h1{
+form.signupForm h1,
+form.signinForm h1 {
   text-align: center;
 }
 

@@ -4,31 +4,34 @@ import { createToken } from "../services/auth";
 
 export interface IUser extends Document {
   name: string,
-  email: string,
+  account: string,
   salt: string,
-  profileImageURL: string,
+  avatar: string,
   role: string,
   password: string,
 }
 export interface UserModel extends Model<IUser> {
-  matchPasswordAndGenerateToken(email: string, password: string): string,
+  matchPasswordAndGenerateToken(account: string, password: string): string,
 }
 const UserSchema = new Schema<IUser>({
   name: {
     type: String,
-    required: true,
+    required: [true, "Please add your name"],
+    trim: true,
+    maxlength: [20, "Your name should be upto max 20 characters "]
   },
-  email: {
+  account : {
     type: String,
-    required: true,
+    required: [true, "Please add your Email or Phone no."],
+    trim: true,
     unique: true,
   },
   salt: {
     type: String,
   },
-  profileImageURL: {
+  avatar: {
     type: String,
-    default: 'avatar.svg'
+    default: 'https://static-00.iconduck.com/assets.00/avatar-default-symbolic-icon-2048x1949-pq9uiebg.png'
   },
   role: {
     type: String,
@@ -38,6 +41,7 @@ const UserSchema = new Schema<IUser>({
   password: {
     type: String,
     required: true,
+    trim: true,
   },
 }, { timestamps: true });
 
@@ -54,9 +58,9 @@ UserSchema.pre<IUser>('save', function (next) {
   return next()
 })
 
-UserSchema.static('matchPasswordAndGenerateToken', async function (email: string, password: string): Promise<string> {
+UserSchema.static('matchPasswordAndGenerateToken', async function (account: string, password: string): Promise<string> {
 
-  const user: IUser | null = await this.findOne<IUser>({ email });
+  const user: IUser | null = await this.findOne<IUser>({ account });
   // console.log(user)
   if (!user)
     throw new Error('User not Found')
