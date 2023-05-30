@@ -12,9 +12,9 @@
   -webkit-text-size-adjust: 100%;
 }
 
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
 
 input,
 textarea {
@@ -25,4 +25,20 @@ textarea {
 .ql-snow {
   background-color: white;
   color: black;
+}
+img {
+  max-width: 100%;
+}
+header img{
+  width: 30px;
+}
+.profile img{
+  width: 200px;
+}
+button{
+  background-color: inherit;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: large;
 }

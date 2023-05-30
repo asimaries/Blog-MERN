@@ -11,7 +11,7 @@ export default function SignIn() {
 
   async function signin(e: React.FormEvent) {
     e.preventDefault()
-    const response: Response | any = await fetch('http://localhost:7000/auth/signin', {
+    const response: Response | any = await fetch(`${import.meta.env.VITE_API_URL}/auth/signin`, {
       method: 'POST',
       body: JSON.stringify({ account, password }),
       headers: { 'Content-Type': 'application/json' },
@@ -27,11 +27,8 @@ export default function SignIn() {
     }
   }
 
-  if (redirect)
-    return <Navigate to={'/'} />
-
   return (
-    <>
+    redirect ? <Navigate to={'/'} /> : <>
       <form action="" className="signinForm" onSubmit={signin}>
         <h1 className="text-3xl">SignIn</h1>
         <label htmlFor={"account"} >Email or Phone no. </label>

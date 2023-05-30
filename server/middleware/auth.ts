@@ -1,11 +1,26 @@
 import { Request, Response, NextFunction } from 'express'
-import jwt from 'jsonwebtoken'
+import { validateToken } from '../services/auth';
+import { User } from '../controllers/post';
+export {}
 
-async function auth(req: Request, res: Response, next: NextFunction) {
+declare global {
+  namespace Express {
+    export interface Request {
+      user?: User;
+    }
+  }
+}
+
+export async function auth(req: Request, res: Response, next: NextFunction) {
+  const { token } = req.cookies;
+  if (!token) {
+    return res.status(401).json({ error: 'please SignIn' });
+  }
   try {
-    const token = req.headers.authorization?.split(" ")[1];
-    // const is
+    req.user = validateToken(token) as User
+    next()
   } catch (error) {
     console.log(error)
+    next(error)
   }
 }

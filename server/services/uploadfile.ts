@@ -1,12 +1,11 @@
 import { Request } from 'express'
 import multer from 'multer'
 import fs from 'fs'
-import { validateToken } from './auth'
 import { User } from '../controllers/post'
 
 const storageForPost = multer.diskStorage({
   destination: function (req: Request, file: Express.Multer.File, cb) {
-    const user = validateToken(req.cookies.token) as User
+    const user = req.user as User
     const directory = `./public/uploads/${user._id}`
     if (!fs.existsSync(directory))
       fs.mkdirSync(directory, { recursive: true })

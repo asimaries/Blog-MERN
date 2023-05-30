@@ -1,20 +1,12 @@
 import { Router } from "express";
 
-import { handleGetProfile, handleGetUserProfile } from "../controllers/user"
-import User from "../models/user";
+import { handleGetProfile, handleGetUserProfile, getAllUsers } from "../controllers/user"
+import { auth } from "../middleware/auth";
+
 const router = Router();
 
-router.get('/profile', handleGetProfile)
+router.get('/profile', auth, handleGetProfile)
 router.get('/profile/:id', handleGetUserProfile)
-router.get('/profileall',async  (req, res) => {
-  const users = await User.find({}, {
-    _id: 1,
-    account: 1,
-    name: 1,
-    role: 1,
-    avatar: 1,
-  });
-  return res.json(users).end();
-})
+router.get('/profileall', getAllUsers)
 
 export default router;

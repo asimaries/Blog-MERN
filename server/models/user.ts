@@ -10,9 +10,11 @@ export interface IUser extends Document {
   role: string,
   password: string,
 }
+
 export interface UserModel extends Model<IUser> {
   matchPasswordAndGenerateToken(account: string, password: string): string,
 }
+
 const UserSchema = new Schema<IUser>({
   name: {
     type: String,
@@ -31,7 +33,7 @@ const UserSchema = new Schema<IUser>({
   },
   avatar: {
     type: String,
-    default: 'https://static-00.iconduck.com/assets.00/avatar-default-symbolic-icon-2048x1949-pq9uiebg.png'
+    default: 'public/uploads/avatar.png'
   },
   role: {
     type: String,

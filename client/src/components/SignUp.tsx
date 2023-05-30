@@ -9,27 +9,27 @@ export default function SignUp() {
   const [redirect, setRedirect] = useState<boolean>(false)
 
   async function signup(e: React.FormEvent) {
+
     e.preventDefault()
-    const response: Response | any = await fetch('http://localhost:7000/auth/signup', {
+    const response: Response | any = await fetch(`${import.meta.env.VITE_API_URL}/auth/signup`, {
       method: 'POST',
       body: JSON.stringify({ name, account, password }),
       headers: { 'Content-Type': 'application/json' },
       credentials: "include",
     })
+
     const message = await response.json();
-    console.log(message)
     if (response.status === 200) {
       alert(message.message)
       setRedirect(true)
     }
-    else alert(message.error)
+    else
+      alert(message.error)
   }
 
-  if (redirect)
-    return <Navigate to={'/signin'} />
 
   return (
-    <>
+    redirect ? <Navigate to={'/signin'} /> : <>
       <form className="signupForm" onSubmit={signup}>
         <h1 className="text-3xl">Signup</h1>
         <label htmlFor={"name"}>Name</label>
@@ -52,7 +52,7 @@ export default function SignUp() {
 
         <label htmlFor="password">Password</label>
         <input type="password"
-        id="password"
+          id="password"
           name="password"
           placeholder="Password"
           value={password}
@@ -61,6 +61,7 @@ export default function SignUp() {
         <button>Sign Up</button>
       </form>
     </>
+
   )
 }
 

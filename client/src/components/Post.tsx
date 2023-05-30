@@ -1,30 +1,55 @@
-import { Link } from "react-router-dom"
+import { useEffect, useState, useContext } from "react";
+import { useParams, Link } from "react-router-dom"
+import { UserContext } from "../context/user";
 
-
-interface PostProp {
-  imageURL: string,
+export interface IPost {
+  _id: string,
   title: string,
-  content: string,
-  author: string,
-  postedAt: Date
+  summary: string,
+  content: string | TrustedHTML,
+  cover: string,
+  createdBy: {
+    _id: string,
+    account: string,
+  },
 }
 
-const Post: React.FC<PostProp> = ({ imageURL, title, content, author, postedAt }: PostProp) => {
+export default function Post() {
+
+  const { user } = useContext(UserContext)
+  const { id } = useParams();
+
+  const [post, setPost] = useState<IPost>({
+    _id: '',
+    title: '',
+    summary: '',
+    content: '',
+    cover: '',
+    createdBy: { account: '', _id: '' },
+  })
+
+  const getPost = async () => {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/post/${id}`)
+    const respost = await res.json();
+    setPost(respost)
+  }
+  useEffect(() => {
+    getPost()
+  }, [id])
+
   return (
-    <div className="post">
-      <img src={imageURL} alt={title} />
-      <div className='post-info'>
-        <div>
-          <h2 className='title'>{title}</h2>
-          <p className='content-fade'>{content}</p>
-        </div>
-        <div className="meta-info">
-          <Link className="author" to={"profile/:id"}>{author}</Link>
-          <p className='postedAt'>{postedAt.toDateString()}</p>
-        </div>
-      </div>
+    <div>
+      {(user._id === post.createdBy._id) &&
+        <Link to={`/post/${post?._id}/edit`} className="edit-post-btn">Edit Post</Link>}
+        
+      <h1>{post?.title}</h1>
+      <h2>{post?.createdBy.account}</h2>
+      <p>{post?.summary}</p>
+
+      <img src={`${import.meta.env.VITE_API_URL}/${post?.cover}`} alt="" />
+
+      <div className="content" dangerouslySetInnerHTML={{ __html: post?.content }} />
+
     </div>
   )
 }
-
-export default Post

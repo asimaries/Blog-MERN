@@ -8,7 +8,7 @@ export default function Profile() {
   const [profile, setProfile] = useState(user)
   useEffect(() => {
     if (id !== user.account) {
-      fetch(`http://localhost:7000/user/profile/${id}`, {
+      fetch(`${import.meta.env.VITE_API_URL}/user/profile/${id}`, {
         credentials: 'include',
       }).then(response => {
         response.json().then(user => {
@@ -19,28 +19,35 @@ export default function Profile() {
     else {
       setProfile(user)
     }
-    console.log('Profile render')
   }, [id])
   const [allUsers, setAllUsers] = useState<User[]>([user])
 
   const fetchALlusers = async () => {
 
-    const res = await fetch(`http://localhost:7000/user/profileall`)
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/user/profileall`)
     const data = await res.json();
     setAllUsers(data)
   }
   useEffect(() => {
     fetchALlusers()
   }, [])
+
   return (
-    <>
-      <img src={profile.avatar.toString()} alt="" className="h-80" />
+    <div className="profile">
+      <img src={`${import.meta.env.VITE_API_URL}/${profile.avatar.toString()}`} alt="" className="h-80" />
+
       <h3>{profile.name}</h3>
       <h3>{profile.account}</h3>
       <h3>{profile.role}</h3>
+
       {allUsers.map((user, key) => {
-        return <div key={key}><Link to={`/profile/${user.account}`}>{user.account}</Link></div>
+        return <div key={key}>
+          <Link to={`/profile/${user.account}`}>
+            {user.account}
+          </Link>
+        </div>
       })}
-    </>
+
+    </div>
   )
 }

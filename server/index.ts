@@ -9,16 +9,19 @@ import AuthRouter from './routes/auth';
 import UserRouter from './routes/user';
 import PostRouter from './routes/post';
 import { resolve } from 'path';
+import errorHandler from './middleware/errorHandler';
 
 
 const app: Application = express();
-const PORT = 7000;
+const PORT = process.env.PORT || 7000;
 
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
+
 app.use('/public', express.static(resolve('./public')));
+app.use(errorHandler)
 
 app.use('/', (req: Request, res: Response, next: NextFunction) => {
   console.log(`>> ${req.method} ${req.path}`)
@@ -37,7 +40,7 @@ app.get('/', (req, res) => {
 
 
 // Databases
-connect('mongodb://127.0.0.1:27017/blog-mern')
+connect(process.env?.MONGODB_URL as string)
   .then(() => {
     app.listen(PORT, () => console.log(`http://localhost:${PORT}`))
   })

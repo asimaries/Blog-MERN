@@ -1,22 +1,30 @@
-import { useEffect,useContext } from "react"
+import { useEffect, useContext } from "react"
 import { Link } from "react-router-dom"
 import { UserContext, UserContextType } from "../context/user"
-
+import Cookies from 'js-cookie';
+import jwtDecode from "jwt-decode";
 const Header = () => {
   const { user, setUser }: UserContextType = useContext<UserContextType>(UserContext)
 
   useEffect(() => {
-  fetch(`http://localhost:7000/user/profile`, {
+    fetch(`${import.meta.env.VITE_API_URL}/user/profile`, {
       credentials: 'include',
     }).then(response => {
       response.json().then(user => {
         setUser(user)
       })
-
     })
   }, [])
+  useEffect(() => {
+    const token = Cookies.get('token');
+    if (token) {
+      const decodedToken: any = jwtDecode(token)
+      if (decodedToken?.exp * 1000 < new Date().getTime())
+        logout()
+    }
+  }, []);
   function logout() {
-    fetch('http://localhost:7000/auth/logout', {
+    fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
       credentials: "include",
       method: "POST"
     })
@@ -36,17 +44,17 @@ const Header = () => {
       <header>
         <Link to={"/"} className='logo'>Code.to</Link>
         <nav>
-          {!username &&
+          {!username ?
             <>
               <Link to={"/signin"}>SignIn</Link>
               <Link to={"/signup"}>SignUp</Link>
-            </>
-          }
-          {username && <>
-            <button><Link to={`/profile/${user.account}`}>{user.account}</Link></button>
-            <button><Link to={"/create"}>Create </Link></button>
-            <button onClick={logout}>Logout</button>
-          </>}
+            </> : <>
+              <Link to={`/profile/${user.account}`}>
+                <span>{user.account}</span>
+              </Link>
+              <Link to={"/create"}>Create </Link>
+              <div onClick={logout}>Logout</div>
+            </>}
         </nav>
       </header>
     </>

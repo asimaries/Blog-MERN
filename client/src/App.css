@@ -65,10 +65,11 @@ header nav {
 }
 
 .post .post-info .content-fade {
+  width: 400px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: 8;
 }
 
 .post .meta-info {
@@ -118,3 +119,7 @@ form.signinForm h1 {
   text-align: center;
 }
 
+.edit-post-btn{
+  display: block;
+  text-align: right;
+}
