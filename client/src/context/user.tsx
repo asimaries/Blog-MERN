@@ -30,7 +30,7 @@ interface UserProviderProps {
   children: ReactNode
 }
 
-export function UserContextProvider(props: UserProviderProps){
+export default function UserContextProvider(props: UserProviderProps){
   const [user, setUser] = useState<User>({
     _id: '',
     account: '',

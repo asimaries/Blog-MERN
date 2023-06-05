@@ -1,6 +1,7 @@
 import { useEffect, useContext, useState } from "react"
-import { User, UserContext, UserContextType } from "../context/user"
 import { useParams, Link } from "react-router-dom"
+
+import { User, UserContext, UserContextType } from "../context/user"
 
 export default function Profile() {
   const { id } = useParams<{ id: string }>();

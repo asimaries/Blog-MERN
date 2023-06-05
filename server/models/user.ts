@@ -9,10 +9,11 @@ export interface IUser extends Document {
   avatar: string,
   role: string,
   password: string,
+  verified: boolean
 }
 
 export interface UserModel extends Model<IUser> {
-  matchPasswordAndGenerateToken(account: string, password: string): string,
+  matchPasswordAndgenerateVerificationToken(account: string, password: string): string,
 }
 
 const UserSchema = new Schema<IUser>({
@@ -22,7 +23,7 @@ const UserSchema = new Schema<IUser>({
     trim: true,
     maxlength: [20, "Your name should be upto max 20 characters "]
   },
-  account : {
+  account: {
     type: String,
     required: [true, "Please add your Email or Phone no."],
     trim: true,
@@ -45,6 +46,10 @@ const UserSchema = new Schema<IUser>({
     required: true,
     trim: true,
   },
+  verified: {
+    type: Boolean,
+    default: false
+  }
 }, { timestamps: true });
 
 UserSchema.pre<IUser>('save', function (next) {
@@ -60,19 +65,25 @@ UserSchema.pre<IUser>('save', function (next) {
   return next()
 })
 
-UserSchema.static('matchPasswordAndGenerateToken', async function (account: string, password: string): Promise<string> {
+UserSchema.static('matchPasswordAndgenerateVerificationToken', async function (account: string, password: string): Promise<string> {
 
   const user: IUser | null = await this.findOne<IUser>({ account });
-  // console.log(user)
+
   if (!user)
     throw new Error('User not Found')
+
+  if (!user.verified)
+    throw new Error('Please verify your email')
+
+
 
   const hashPassword = createHmac('sha256', user.salt)
     .update(password)
     .digest('hex')
   if (hashPassword !== user.password)
     throw new Error('Wrong Password')
-    
+
+  // console.log(user)
   return createToken(user);
 })
 

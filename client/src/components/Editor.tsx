@@ -18,17 +18,18 @@ const formats = [
   'link', 'image'
 ]
 
-interface EditorProp{
+interface EditorProp {
   content: string,
   setContent: React.Dispatch<React.SetStateAction<string>>,
 }
 
-export default function Editor({content, setContent}: EditorProp) {
-  return (<ReactQuill
-    theme="snow"
-    value={content}
-    onChange={setContent}
-    formats={formats}
-    modules={modules} />
+export default function Editor({ content, setContent }: EditorProp) {
+  return (
+    <ReactQuill
+      theme="snow"
+      value={content}
+      onChange={setContent}
+      formats={formats}
+      modules={modules} />
   )
 }

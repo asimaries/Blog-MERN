@@ -1,3 +1,4 @@
+import { resolve } from 'path';
 import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { connect } from 'mongoose';
@@ -8,7 +9,6 @@ config()
 import AuthRouter from './routes/auth';
 import UserRouter from './routes/user';
 import PostRouter from './routes/post';
-import { resolve } from 'path';
 import errorHandler from './middleware/errorHandler';
 
 
@@ -39,8 +39,9 @@ app.get('/', (req, res) => {
 })
 
 
+
 // Databases
-connect(process.env?.MONGODB_URL as string)
+connect(process.env.MONGODB_URL as string)
   .then(() => {
     app.listen(PORT, () => console.log(`http://localhost:${PORT}`))
   })

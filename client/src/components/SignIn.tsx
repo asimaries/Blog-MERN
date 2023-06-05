@@ -9,7 +9,7 @@ export default function SignIn() {
   const [redirect, setRedirect] = useState<boolean>(false)
   const { setUser } = useContext<UserContextType>(UserContext)
 
-  async function signin(e: React.FormEvent) {
+  async function signin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const response: Response | any = await fetch(`${import.meta.env.VITE_API_URL}/auth/signin`, {
       method: 'POST',

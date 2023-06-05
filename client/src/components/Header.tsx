@@ -1,8 +1,10 @@
 import { useEffect, useContext } from "react"
 import { Link } from "react-router-dom"
-import { UserContext, UserContextType } from "../context/user"
 import Cookies from 'js-cookie';
 import jwtDecode from "jwt-decode";
+
+import { UserContext, UserContextType } from "../context/user"
+
 const Header = () => {
   const { user, setUser }: UserContextType = useContext<UserContextType>(UserContext)
 
@@ -15,6 +17,7 @@ const Header = () => {
       })
     })
   }, [])
+
   useEffect(() => {
     const token = Cookies.get('token');
     if (token) {
@@ -23,6 +26,7 @@ const Header = () => {
         logout()
     }
   }, []);
+
   function logout() {
     fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
       credentials: "include",
@@ -44,16 +48,16 @@ const Header = () => {
       <header>
         <Link to={"/"} className='logo'>Code.to</Link>
         <nav>
-          {!username ?
+          {username ?
             <>
-              <Link to={"/signin"}>SignIn</Link>
-              <Link to={"/signup"}>SignUp</Link>
-            </> : <>
               <Link to={`/profile/${user.account}`}>
                 <span>{user.account}</span>
               </Link>
               <Link to={"/create"}>Create </Link>
               <div onClick={logout}>Logout</div>
+            </> : <>
+              <Link to={"/signin"}>SignIn</Link>
+              <Link to={"/signup"}>SignUp</Link>
             </>}
         </nav>
       </header>

@@ -10,8 +10,9 @@ import Reset from "./components/Reset";
 import PageNotFound from "./components/PageNotFound";
 import Post from "./components/Post";
 import EditPost from "./components/EditPost";
-import { UserContextProvider } from './context/user';
+import UserContextProvider from './context/user';
 import CreatePost from './components/CreatePost';
+import Verify from './components/verify';
 
 
 function App() {
@@ -24,7 +25,8 @@ function App() {
           <Route path={'/'} element={<Home />} />
           <Route path={'signin'} element={<SignIn />} />
           <Route path={'signup'} element={<SignUp />} />
-          <Route path={'profile/:id'} element={<Profile/>} />
+          <Route path={'verify/:token'} element={<Verify />} />
+          <Route path={'profile/:id'} element={<Profile />} />
           <Route path={'post/:id'} element={<Post />} />
           <Route path={'post/:id/edit'} element={<EditPost />} />
           <Route path={'recovery'} element={<Recovery />} />

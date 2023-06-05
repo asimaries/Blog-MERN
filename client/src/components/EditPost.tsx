@@ -5,7 +5,7 @@ import Editor from "./Editor";
 
 
 export default function EditPost() {
-  
+
   const { id } = useParams()
   const [title, setTitle] = useState<string>('')
   const [summary, setSummary] = useState<string>('')
@@ -27,14 +27,14 @@ export default function EditPost() {
   }, [id])
 
 
-  async function editNewPost(e: React.FormEvent) {
+  async function editNewPost(e: React.FormEvent<HTMLFormElement>) {
 
     e.preventDefault()
     const data = new FormData();
     data.append('title', title);
     data.append('summary', summary);
     data.set('content', content);
-    data.append('file', file);
+    if (file) data.append('file', file);
 
     const response = await fetch(`${import.meta.env.VITE_API_URL}/post/${id}/edit`,
       { method: 'PATCH', body: data, credentials: 'include' });
@@ -65,9 +65,9 @@ export default function EditPost() {
       <input type="file"
         onChange={(e) => setFile(e.target.files?.[0])} />
 
-      <Editor 
-      content={content} 
-      setContent={setContent} />
+      <Editor
+        content={content}
+        setContent={setContent} />
 
       <button>Edit Post</button>
 
