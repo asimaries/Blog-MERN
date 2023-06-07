@@ -1,14 +1,26 @@
 import { Request, Response, NextFunction } from 'express'
-import { validateToken } from '../services/auth';
+import JWT from 'jsonwebtoken';
 import { User } from '../controllers/post';
 
 export async function auth(req: Request, res: Response, next: NextFunction) {
-  const { token } = req.cookies;
-  if (!token) {
+  let token = req.headers['authorization'];
+  token = token?.split(' ')[1]
+  
+  if (!token)
     return res.status(401).json({ error: 'please SignIn' });
-  }
+
   try {
-    req.user = validateToken(token) as User
+    JWT.verify(token, process.env.ACCESS_TOKEN, async (error: any, user: any) => {
+
+      if (user) { req.user = user; next() }
+
+      if (error?.message === 'jwt expired')
+        return res.json({ success: false, message: 'Access token expired' })
+
+      console.log(error)
+
+      return res.status(403).json({ error, message: 'User not Authenticated' })
+    });
     next()
   } catch (error) {
     console.log(error)

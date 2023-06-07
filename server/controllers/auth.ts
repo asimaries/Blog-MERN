@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
+import JWT from "jsonwebtoken";
 
 import User from '../models/user';
-import { validateToken } from "../services/auth";
+import { generateAccessToken, validateAccessToken } from "../services/auth";
 import { sendMail } from "../services/mailer";
 import { generateVerificationToken } from "../services/generateToken";
 import { validEmail, validPhone } from "../middleware/validator";
@@ -42,11 +43,18 @@ async function handleSignUp(req: Request, res: Response) {
 async function handleSignIn(req: Request, res: Response) {
   const { account, password } = req.body;
   try {
-    const token = await User.matchPasswordAndgenerateVerificationToken(account, password)
-    const user = validateToken(token) as IUser
+    const { accessToken, refreshToken }: any = await User.matchPasswordAndgenerateVerificationToken(account, password)
+
+    refreshTokens.add(refreshToken)
+
     res.status(200)
-      .cookie('token', token)
-      .json({ user });
+      .cookie('token', refreshToken, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'none',
+        maxAge: 7 * 24 * 60 * 60 * 1000
+      })
+      .json({ accessToken });
     return res.end();
   } catch (error: any) {
     console.log(error?.message)
@@ -55,8 +63,35 @@ async function handleSignIn(req: Request, res: Response) {
   }
 }
 
+let refreshTokens = new Set()
+
+function handleRefresh(req: Request, res: Response) {
+  const { token } = req.cookies;
+  console.log(token)
+  try {
+    if (!token) return res.status(400).json({ message: 'Unauthorized' })
+
+    JWT.verify(token,
+      process.env.REFRESH_TOKEN,
+      async (err: any, user: any) => {
+        if (err) return res.status(403).json({ message: 'Forbidden' })
+
+        const foundUser = await User.findOne({ account: user.account }).exec()
+
+        if (!foundUser) return res.status(401).json({ message: 'Unauthorized' })
+
+        const accessToken =  generateAccessToken(foundUser)
+        console.log(accessToken)
+        res.json({accessToken})
+      })
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
 function handleLogout(req: Request, res: Response) {
-  return res.status(200).cookie('token', '').json('OK')
+  return res.status(200).clearCookie('token').json('OK')
 }
 
 async function emailVerificaton(req: Request, res: Response) {
@@ -76,4 +111,4 @@ async function emailVerificaton(req: Request, res: Response) {
 }
 
 
-export { handleSignIn, handleSignUp, handleLogout, emailVerificaton };
+export { handleSignIn, handleSignUp, handleLogout, emailVerificaton, handleRefresh };

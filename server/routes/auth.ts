@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 
-import { handleSignUp, handleSignIn, handleLogout, emailVerificaton } from "../controllers/auth";
+import { handleSignUp, handleSignIn, handleLogout, emailVerificaton, handleRefresh } from "../controllers/auth";
 import { validSignUp } from "../middleware/validator";
 
 
@@ -11,6 +11,7 @@ router.post('/signup', validSignUp, handleSignUp)
 router.get('/verify/:id', emailVerificaton)
 
 router.post('/signin', handleSignIn)
+router.post('/refresh', handleRefresh)
 router.post('/logout', handleLogout)
 
 

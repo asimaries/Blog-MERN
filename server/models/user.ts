@@ -65,7 +65,7 @@ UserSchema.pre<IUser>('save', function (next) {
   return next()
 })
 
-UserSchema.static('matchPasswordAndgenerateVerificationToken', async function (account: string, password: string): Promise<string> {
+UserSchema.static('matchPasswordAndgenerateVerificationToken', async function (account: string, password: string): Promise<any> {
 
   const user: IUser | null = await this.findOne<IUser>({ account });
 
