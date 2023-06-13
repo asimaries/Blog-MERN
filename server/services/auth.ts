@@ -1,8 +1,6 @@
 import JWT, { SignOptions } from "jsonwebtoken"
 import { IUser } from "../models/user";
 
-const SECRET_KEY: JWT.Secret = process.env.ACCESS_TOKEN as string;
-
 function createPayload(user: IUser): any {
 
   const payload = {
@@ -22,7 +20,7 @@ function createToken(user: IUser): any {
   return { accessToken, refreshToken };
 }
 
-function validateAccessToken(token: string) {
+async function validateAccessToken(token: string) {
   return JWT.verify(token, process.env.ACCESS_TOKEN, async (error, user) => {
 
     if (user) return user;
@@ -42,12 +40,12 @@ function validateRefreshToken(token: string) {
 
 function generateAccessToken(user: IUser): any {
   const payload = createPayload(user)
-  return JWT.sign(payload, `${process.env.ACCESS_TOKEN}`, { expiresIn: '10s' })
+  return JWT.sign(payload, `${process.env.ACCESS_TOKEN}`, { expiresIn: '60s' })
 }
 
 function generateRefreshToken(user: IUser): any {
   const payload = createPayload(user)
-  return JWT.sign(payload, `${process.env.REFRESH_TOKEN}`, { expiresIn: '1m' })
+  return JWT.sign(payload, `${process.env.REFRESH_TOKEN}`, { expiresIn: '1d' })
 }
 
 

@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from "react"
-
+import React, { useState, useEffect, useContext } from "react"
+// import FormData from "form-data";
 import { Navigate, useParams } from "react-router-dom";
 import Editor from "./Editor";
-
+import { UserContext, UserContextType } from "../context/user";
 
 export default function EditPost() {
+
+  const { user } = useContext<UserContextType>(UserContext)
+
 
   const { id } = useParams()
   const [title, setTitle] = useState<string>('')
@@ -27,17 +30,21 @@ export default function EditPost() {
   }, [id])
 
 
-  async function editNewPost(e: React.FormEvent<HTMLFormElement>) {
+  async function editNewPost(e: React.FormEvent) {
 
     e.preventDefault()
     const data = new FormData();
-    data.append('title', title);
-    data.append('summary', summary);
-    data.set('content', content);
+    data.set('title', title);
+    data.set('summary', summary);
+    data.append('content', content);
     if (file) data.append('file', file);
-
     const response = await fetch(`${import.meta.env.VITE_API_URL}/post/${id}/edit`,
-      { method: 'PATCH', body: data, credentials: 'include' });
+      {
+        method: 'PATCH', body: data,
+        headers: {
+          Authorization: `Bearer ${user.accessToken}`
+        }
+      });
     const res = await response.json();
 
     if (response.ok) {
@@ -48,7 +55,6 @@ export default function EditPost() {
   }
 
   if (redirect) return <Navigate to={`/post/${redirect}`} />
-
   return (
     <form onSubmit={editNewPost}>
 

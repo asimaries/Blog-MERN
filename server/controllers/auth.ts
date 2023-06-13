@@ -7,7 +7,6 @@ import { sendMail } from "../services/mailer";
 import { generateVerificationToken } from "../services/generateToken";
 import { validEmail, validPhone } from "../middleware/validator";
 import verifyModel from "../models/verify";
-import { User as IUser } from "./post";
 import { sendSMS } from "../services/sendSMS";
 
 
@@ -44,18 +43,17 @@ async function handleSignIn(req: Request, res: Response) {
   const { account, password } = req.body;
   try {
     const { accessToken, refreshToken }: any = await User.matchPasswordAndgenerateVerificationToken(account, password)
-
+    const user = await (validateAccessToken(accessToken))
     refreshTokens.add(refreshToken)
-
-    res.status(200)
+    return res.status(200)
       .cookie('token', refreshToken, {
         httpOnly: true,
-        secure: false,
+        secure: true,
         sameSite: 'none',
-        maxAge: 7 * 24 * 60 * 60 * 1000
+        maxAge: 24 * 60 * 60 * 1000 // 7 days
       })
-      .json({ accessToken });
-    return res.end();
+      .json({ user,accessToken });
+    
   } catch (error: any) {
     console.log(error?.message)
     return res.status(400)
@@ -65,29 +63,29 @@ async function handleSignIn(req: Request, res: Response) {
 
 let refreshTokens = new Set()
 
-function handleRefresh(req: Request, res: Response) {
+async function handleRefresh(req: Request, res: Response) {
   const { token } = req.cookies;
-  console.log(token)
   try {
     if (!token) return res.status(400).json({ message: 'Unauthorized' })
 
     JWT.verify(token,
       process.env.REFRESH_TOKEN,
       async (err: any, user: any) => {
+        console.log(err)
         if (err) return res.status(403).json({ message: 'Forbidden' })
-
+        console.log(user.account)
         const foundUser = await User.findOne({ account: user.account }).exec()
 
         if (!foundUser) return res.status(401).json({ message: 'Unauthorized' })
 
-        const accessToken =  generateAccessToken(foundUser)
-        console.log(accessToken)
-        res.json({accessToken})
+        const accessToken = generateAccessToken(foundUser)
+        return res.json({ accessToken })
       })
   }
   catch (error) {
     console.log(error)
   }
+  return;
 }
 
 function handleLogout(req: Request, res: Response) {
@@ -111,4 +109,10 @@ async function emailVerificaton(req: Request, res: Response) {
 }
 
 
-export { handleSignIn, handleSignUp, handleLogout, emailVerificaton, handleRefresh };
+export {
+  handleSignIn,
+  handleSignUp,
+  handleLogout,
+  emailVerificaton,
+  handleRefresh
+};

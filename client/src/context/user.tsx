@@ -6,6 +6,7 @@ export interface User {
   name: String,
   role: String,
   avatar: String,
+  accessToken: string
 }
 
 export interface UserContextType {
@@ -20,6 +21,7 @@ const defaultState = {
     name: '',
     role: '',
     avatar: '',
+    accessToken: ''
   },
   setUser: (user: User) => { }
 } as UserContextType;
@@ -37,6 +39,7 @@ export default function UserContextProvider(props: UserProviderProps){
     name: '',
     role: '',
     avatar: '',
+    accessToken: ''
   }) 
   return (
     <UserContext.Provider value={{user, setUser}}>

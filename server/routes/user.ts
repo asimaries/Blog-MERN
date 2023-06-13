@@ -6,7 +6,7 @@ import { auth } from "../middleware/auth";
 const router = Router();
 
 router.get('/profile', auth, handleGetProfile)
-router.get('/profile/:id', handleGetUserProfile)
-router.get('/profileall', getAllUsers)
+router.get('/profile/:id', auth, handleGetUserProfile)
+router.get('/profileall', auth, getAllUsers)
 
 export default router;

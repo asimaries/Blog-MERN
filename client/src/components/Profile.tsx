@@ -10,7 +10,10 @@ export default function Profile() {
   useEffect(() => {
     if (id !== user.account) {
       fetch(`${import.meta.env.VITE_API_URL}/user/profile/${id}`, {
-        credentials: 'include',
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.accessToken}`
+        }
       }).then(response => {
         response.json().then(user => {
           setProfile(user)
@@ -25,7 +28,13 @@ export default function Profile() {
 
   const fetchALlusers = async () => {
 
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/user/profileall`)
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/user/profileall`, {
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.accessToken}`
+      }
+    })
     const data = await res.json();
     setAllUsers(data)
   }

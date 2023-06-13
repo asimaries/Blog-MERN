@@ -10,6 +10,7 @@ import AuthRouter from './routes/auth';
 import UserRouter from './routes/user';
 import PostRouter from './routes/post';
 import errorHandler from './middleware/errorHandler';
+import bodyParser from 'body-parser';
 
 
 const app: Application = express();

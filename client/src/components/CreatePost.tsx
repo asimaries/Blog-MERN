@@ -1,10 +1,12 @@
-import React, { useState } from "react"
+import React, { useState , useContext} from "react"
 import { Navigate } from "react-router-dom";
 
 import Editor from "./Editor";
+import { UserContext, UserContextType } from "../context/user";
 
 export default function CreatePost() {
 
+  const {user} = useContext<UserContextType>(UserContext)
   const [title, setTitle] = useState<string>('')
   const [summary, setSummary] = useState<string>('')
   const [content, setContent] = useState<string>('')
@@ -16,15 +18,16 @@ export default function CreatePost() {
     e.preventDefault()
     try {
       const formData = new FormData();
-      if (title) formData.append('title', title);
-      if (summary) formData.append('summary', summary);
-      if (content) formData.append('content', content);
-      if (file) formData.append('file', file);
-
+      formData.set('title', title);
+      formData.set('summary', summary);
+      formData.set('content', content);
+      if (file) formData.set('file', file);
       const response = await fetch(`${import.meta.env.VITE_API_URL}/post/create`, {
         method: 'POST',
         body: formData,
-        credentials: 'include'
+        headers: {
+          Authorization: `Bearer ${user.accessToken}`
+        }
       });
       const res = await response.json();
 
@@ -38,7 +41,6 @@ export default function CreatePost() {
     }
 
   }
-
   return (
     redirect ? <Navigate to={`/post/${redirect}`} /> : <>
       <form onSubmit={createNewPost}>

@@ -59,7 +59,6 @@ async function editPost(req: Request, res: Response) {
 
 async function getPost(req: Request, res: Response) {
   const { id } = req.params;
-  console.log(id)
   try {
     const post = await Post
       .findOne({ _id: id })

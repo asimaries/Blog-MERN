@@ -1,22 +1,34 @@
-import { useEffect, useContext } from "react"
+import { useEffect, useContext, useState } from "react"
 import { Link } from "react-router-dom"
 import Cookies from 'js-cookie';
 import jwtDecode from "jwt-decode";
 
 import { UserContext, UserContextType } from "../context/user"
-
+import useRefreshToken from "../hooks/useRefreshToken";
 const Header = () => {
-  const { user, setUser }: UserContextType = useContext<UserContextType>(UserContext)
 
+  const { user, setUser }: UserContextType = useContext<UserContextType>(UserContext)
+  const refresh = useRefreshToken();
+  const [runeffect, setRuneffect] = useState(false)
+  useEffect(() => {
+    (async () => {
+      await refresh()
+      setRuneffect(true)
+    })()
+  }, [])
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/user/profile`, {
-      credentials: 'include',
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.accessToken}`
+      }
     }).then(response => {
-      response.json().then(user => {
-        setUser(user)
+      response.json().then(user => {        
+        setUser(prev => { return { ...user, accessToken: prev.accessToken } })
       })
     })
-  }, [])
+
+  }, [runeffect])
 
   useEffect(() => {
     const token = Cookies.get('token');
@@ -38,6 +50,7 @@ const Header = () => {
       name: '',
       role: '',
       avatar: '',
+      accessToken: ''
     })
   }
 

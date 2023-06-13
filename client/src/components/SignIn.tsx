@@ -1,9 +1,9 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useRef, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { UserContext, UserContextType } from "../context/user";
-
 export default function SignIn() {
 
+  const inputRef = useRef<HTMLInputElement>(null)
   const [account, setAccount] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [redirect, setRedirect] = useState<boolean>(false)
@@ -15,17 +15,18 @@ export default function SignIn() {
       method: 'POST',
       body: JSON.stringify({ account, password }),
       headers: { 'Content-Type': 'application/json' },
-      credentials: "include",
+      credentials: "include"
     })
     const data = await response.json();
     if (response.status === 200) {
-      setUser(data.user)
+      setUser({ ...data.user, accessToken: data.accessToken })
       setRedirect(true)
     }
     else {
       alert(data.error)
     }
   }
+  useEffect(() => { if (inputRef.current) inputRef?.current?.focus() }, [])
 
   return (
     redirect ? <Navigate to={'/'} /> : <>
@@ -33,6 +34,7 @@ export default function SignIn() {
         <h1 className="text-3xl">SignIn</h1>
         <label htmlFor={"account"} >Email or Phone no. </label>
         <input type="text"
+          ref={inputRef}
           name="account"
           placeholder="Email or Phone no."
           value={account}
