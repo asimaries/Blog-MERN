@@ -1,18 +1,18 @@
-import React, { useState , useContext} from "react"
+import React, { useState } from "react"
 import { Navigate } from "react-router-dom";
 
 import Editor from "./Editor";
-import { UserContext, UserContextType } from "../context/user";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 export default function CreatePost() {
 
-  const {user} = useContext<UserContextType>(UserContext)
   const [title, setTitle] = useState<string>('')
   const [summary, setSummary] = useState<string>('')
   const [content, setContent] = useState<string>('')
   const [file, setFile] = useState<File>()
   const [redirect, setRedirect] = useState<string>()
 
+  const fetchAPI = useAxiosPrivate()
 
   async function createNewPost(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -22,17 +22,11 @@ export default function CreatePost() {
       formData.set('summary', summary);
       formData.set('content', content);
       if (file) formData.set('file', file);
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/post/create`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${user.accessToken}`
-        }
-      });
-      const res = await response.json();
 
-      if (response.ok) {
-        setRedirect(res.postID);
+      const res = await fetchAPI.post('/post/create', formData)
+
+      if (res.data) {
+        setRedirect(res.data.postID);
       } else {
         alert('Error')
       }

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import JWT from "jsonwebtoken";
 
 import User from '../models/user';
-import { generateAccessToken, validateAccessToken } from "../services/auth";
+import { generateAccessToken, getGoogleOAuthToken, validateAccessToken } from "../services/auth";
 import { sendMail } from "../services/mailer";
 import { generateVerificationToken } from "../services/generateToken";
 import { validEmail, validPhone } from "../middleware/validator";
@@ -50,10 +50,10 @@ async function handleSignIn(req: Request, res: Response) {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
-        maxAge: 24 * 60 * 60 * 1000 // 7 days
+        maxAge: 24 * 60 * 60 * 1000 // 1 days
       })
-      .json({ user,accessToken });
-    
+      .json({ user, accessToken });
+
   } catch (error: any) {
     console.log(error?.message)
     return res.status(400)
@@ -108,11 +108,29 @@ async function emailVerificaton(req: Request, res: Response) {
   }
 }
 
+async function googleOAuth(req: Request, res: Response) {
+  // get the code from qs
+  const code = req.query.code as string
+  const { } = await getGoogleOAuthToken({ code })
+  // get the id and access token 
+
+  // get user with tokens
+
+  // upsert the user 
+
+  // create session
+
+  // create access and refresh token 
+  // setcookies
+  // redirect back to client
+}
+
 
 export {
   handleSignIn,
   handleSignUp,
   handleLogout,
   emailVerificaton,
-  handleRefresh
+  handleRefresh,
+  googleOAuth
 };

@@ -1,6 +1,8 @@
 import { useContext, useState, useRef, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { UserContext, UserContextType } from "../context/user";
+import { getGoogleOAuthURL } from "../api";
+
 export default function SignIn() {
 
   const inputRef = useRef<HTMLInputElement>(null)
@@ -31,6 +33,7 @@ export default function SignIn() {
   return (
     redirect ? <Navigate to={'/'} /> : <>
       <form action="" className="signinForm" onSubmit={signin}>
+        <a href={getGoogleOAuthURL()}><button type="button">Signin with Google</button></a>
         <h1 className="text-3xl">SignIn</h1>
         <label htmlFor={"account"} >Email or Phone no. </label>
         <input type="text"

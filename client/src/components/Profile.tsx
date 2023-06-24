@@ -1,46 +1,44 @@
 import { useEffect, useContext, useState } from "react"
-import { useParams, Link } from "react-router-dom"
+import { useParams } from "react-router-dom"
 
-import { User, UserContext, UserContextType } from "../context/user"
+import { UserContext, UserContextType } from "../context/user"
+import { PostCardProp } from "./Home";
+import PostCard from "./PostCard";
+import axios from "../api";
+
 
 export default function Profile() {
   const { id } = useParams<{ id: string }>();
   const { user } = useContext<UserContextType>(UserContext)
   const [profile, setProfile] = useState(user)
+  const [allPost, setAllPost] = useState<PostCardProp[]>([{
+    _id: '',
+    title: '',
+    summary: '',
+    cover: '',
+    createdBy: {
+      account: '',
+    },
+    createdAt: new Date(),
+  }])
+  // const fetchAPI = useAxiosPrivate()
+
   useEffect(() => {
-    if (id !== user.account) {
-      fetch(`${import.meta.env.VITE_API_URL}/user/profile/${id}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.accessToken}`
-        }
-      }).then(response => {
-        response.json().then(user => {
-          setProfile(user)
-        })
-      })
-    }
-    else {
-      setProfile(user)
-    }
-  }, [id])
-  const [allUsers, setAllUsers] = useState<User[]>([user])
-
-  const fetchALlusers = async () => {
-
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/user/profileall`, {
-      method: 'GET',
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.accessToken}`
-      }
+    axios.get(`/post/allPost/${id}`).then(res => {
+      setAllPost(res.data)
     })
-    const data = await res.json();
-    setAllUsers(data)
-  }
-  useEffect(() => {
-    fetchALlusers()
-  }, [])
+    if (id === user.account)
+      return setProfile(user)
+    axios.get(`/user/profile/${id}`)
+      .then(res => {
+        setProfile(res.data)
+      })
+
+  }, [id, user])
+
+
+
+
 
   return (
     <div className="profile">
@@ -50,12 +48,8 @@ export default function Profile() {
       <h3>{profile.account}</h3>
       <h3>{profile.role}</h3>
 
-      {allUsers.map((user, key) => {
-        return <div key={key}>
-          <Link to={`/profile/${user.account}`}>
-            {user.account}
-          </Link>
-        </div>
+      {allPost.map((post, key) => {
+        return <PostCard key={key} {...post} />
       })}
 
     </div>

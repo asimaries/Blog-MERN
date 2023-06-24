@@ -83,4 +83,24 @@ async function getAllPost(req: Request, res: Response) {
   }
 }
 
-export { createPost, editPost, getPost, getAllPost }
+async function getAllPostById(req: Request, res: Response) {
+  try {
+    const { id } = req.params
+    const posts = await Post
+      .find({}, { content: 0 })
+      .populate({
+        path: 'createdBy',
+        match: { account: id },
+        select: 'account'
+      })
+      .sort({ createdAt: -1 })
+      .limit(20).exec()
+
+    const post = posts.filter(post => post.createdBy !== null)
+    return res.status(200).json(post);
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export { createPost, editPost, getPost, getAllPost, getAllPostById }

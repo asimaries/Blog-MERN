@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import PostCard from "./PostCard";
+import axios from "../api";
 
-interface PostCardProp {
-  _id: string, 
+export interface PostCardProp {
+  _id: string,
   title: string,
   summary: string,
   cover: string,
@@ -26,9 +27,8 @@ function Home() {
   }])
 
   const getAllPost = async () => {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/post/allPost`)
-    const posts = await res.json();
-    setAllPost(posts)
+    const res = await axios.get(`/post/allPost`)
+    setAllPost(res.data)
   }
   useEffect(() => {
     getAllPost()

@@ -2,33 +2,34 @@ import { useEffect, useContext, useState } from "react"
 import { Link } from "react-router-dom"
 import Cookies from 'js-cookie';
 import jwtDecode from "jwt-decode";
-
+import axios from "../api";
 import { UserContext, UserContextType } from "../context/user"
 import useRefreshToken from "../hooks/useRefreshToken";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 const Header = () => {
 
   const { user, setUser }: UserContextType = useContext<UserContextType>(UserContext)
-  const refresh = useRefreshToken();
-  const [runeffect, setRuneffect] = useState(false)
+
+  const [runGetProfile, setRunGetProfile] = useState(false)
+  const refresh = useRefreshToken()
+  const fetchAPI = useAxiosPrivate()
+  const getProfile = async () => {
+    const res = await fetchAPI.get(`/user/profile`)
+    setUser(prev => { return { ...res.data, accessToken: prev.accessToken } })
+  }
+
   useEffect(() => {
     (async () => {
+      console.log('header mounting ')
       await refresh()
-      setRuneffect(true)
+      setRunGetProfile(true)
     })()
   }, [])
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/user/profile`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.accessToken}`
-      }
-    }).then(response => {
-      response.json().then(user => {        
-        setUser(prev => { return { ...user, accessToken: prev.accessToken } })
-      })
-    })
 
-  }, [runeffect])
+  useEffect(() => {
+    getProfile()
+  }, [runGetProfile])
+
 
   useEffect(() => {
     const token = Cookies.get('token');
@@ -40,9 +41,8 @@ const Header = () => {
   }, []);
 
   function logout() {
-    fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
-      credentials: "include",
-      method: "POST"
+    axios.post(`${import.meta.env.VITE_API_URL}/auth/logout`, {}, {
+      withCredentials: true,
     })
     setUser({
       _id: '',
@@ -53,15 +53,13 @@ const Header = () => {
       accessToken: ''
     })
   }
-
-  const username = user?.name
-
+  const userLive = user.name
   return (
     <>
       <header>
         <Link to={"/"} className='logo'>Code.to</Link>
         <nav>
-          {username ?
+          {userLive ?
             <>
               <Link to={`/profile/${user.account}`}>
                 <span>{user.account}</span>
@@ -80,3 +78,7 @@ const Header = () => {
 
 
 export default Header
+
+
+
+

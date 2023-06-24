@@ -3,11 +3,11 @@ import React, { useState, useEffect, useContext } from "react"
 import { Navigate, useParams } from "react-router-dom";
 import Editor from "./Editor";
 import { UserContext, UserContextType } from "../context/user";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 export default function EditPost() {
 
   const { user } = useContext<UserContextType>(UserContext)
-
 
   const { id } = useParams()
   const [title, setTitle] = useState<string>('')
@@ -16,18 +16,20 @@ export default function EditPost() {
   const [file, setFile] = useState<File | undefined>()
   const [redirect, setRedirect] = useState<string | null>(null)
 
+  const fetchAPI = useAxiosPrivate()
   const getPost = async () => {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/post/${id}`)
-    const respost = await res.json();
-    setTitle(respost.title)
-    setSummary(respost.summary)
-    setContent(respost.content)
-    setFile(respost?.cover)
+    // const res = await fetch(`${import.meta.env.VITE_API_URL}/post/${id}`)
+    // const respost = await res.json();
+    const respost = await fetchAPI.get(`/post/${id}`)
+    setTitle(respost.data?.title)
+    setSummary(respost.data?.summary)
+    setContent(respost.data?.content)
+    setFile(respost.data?.cover)
   }
 
   useEffect(() => {
     getPost()
-  }, [id])
+  }, [user.name])
 
 
   async function editNewPost(e: React.FormEvent) {
@@ -38,17 +40,15 @@ export default function EditPost() {
     data.set('summary', summary);
     data.append('content', content);
     if (file) data.append('file', file);
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/post/${id}/edit`,
+    const response = await fetchAPI.patch(`/post/${id}/edit`, data,
       {
-        method: 'PATCH', body: data,
         headers: {
-          Authorization: `Bearer ${user.accessToken}`
+          'Content-Type': 'multipart/form-data',
         }
       });
-    const res = await response.json();
 
-    if (response.ok) {
-      setRedirect(res.postID);
+    if (response.data) {
+      setRedirect(response.data.postID);
     } else {
       alert('Error')
     }
