@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Post } from "../models/post";
+import { Post, IPost } from "../models/post";
 
 export interface User {
   _id: String,
@@ -60,9 +60,11 @@ async function editPost(req: Request, res: Response) {
 async function getPost(req: Request, res: Response) {
   const { id } = req.params;
   try {
-    const post = await Post
+    let post = await Post
       .findOne({ _id: id })
       .populate('createdBy', 'account createdAt')
+    // .populate('like', '')
+
     return res.status(200).json(post);
   } catch (error) {
     console.log(error)
@@ -103,4 +105,36 @@ async function getAllPostById(req: Request, res: Response) {
   }
 }
 
-export { createPost, editPost, getPost, getAllPost, getAllPostById }
+async function likePost(req: Request, res: Response) {
+  const { postId } = req.params
+  const user = req.user as User
+
+  try {
+    const post: IPost | null = await Post.findById(postId.toString())
+    // console.log(post)
+    // if (post)
+    await post?.likePost(postId, user._id)
+    return res.json(post)
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message })
+  }
+
+}
+
+async function unlikePost(req: Request, res: Response) {
+  const { postId } = req.params
+  const user = req.user as User
+
+  try {
+    const post: IPost | null = await Post.findById(postId.toString())
+    // console.log(post)
+    // if (post)
+    await post?.unlikePost(postId, user._id)
+    return res.json(post)
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message })
+  }
+
+}
+
+export { createPost, editPost, getPost, getAllPost, getAllPostById, likePost, unlikePost }

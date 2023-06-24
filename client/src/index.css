@@ -26,19 +26,29 @@ textarea {
   background-color: white;
   color: black;
 }
+
 img {
   max-width: 100%;
 }
-header img{
+
+header img {
   width: 30px;
 }
-.profile img{
+
+.profile img {
   width: 200px;
 }
-button{
+
+button {
   background-color: inherit;
   border: none;
   outline: none;
   color: white;
   font-size: large;
+}
+
+button.like-btn {}
+
+button.like-btn.liked {
+  color: aqua;
 }
