@@ -50,6 +50,7 @@ PostSchema.methods.likePost = async function (postId: string, userId: string) {
   this.like.push(userId)
   await this.save()
 }
+
 PostSchema.methods.unlikePost = async function (postId: string, userId: string) {
   this.like.pull(userId)
   await this.save()

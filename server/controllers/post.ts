@@ -110,11 +110,11 @@ async function likePost(req: Request, res: Response) {
   const user = req.user as User
 
   try {
-    const post: IPost | null = await Post.findById(postId.toString())
+    const post: IPost | null = await Post.findById(postId)
     // console.log(post)
-    // if (post)
+    if (!post) throw new Error('incorrect Post id')
     await post?.likePost(postId, user._id)
-    return res.json(post)
+    return res.json({ postLikeCount: post?.like.length })
   } catch (error: any) {
     return res.status(400).json({ message: error.message })
   }
@@ -126,15 +126,43 @@ async function unlikePost(req: Request, res: Response) {
   const user = req.user as User
 
   try {
-    const post: IPost | null = await Post.findById(postId.toString())
+    const post: IPost | null = await Post.findById(postId)
     // console.log(post)
     // if (post)
     await post?.unlikePost(postId, user._id)
-    return res.json(post)
+    return res.json({ postLikeCount: post?.like.length })
   } catch (error: any) {
     return res.status(400).json({ message: error.message })
   }
 
 }
 
-export { createPost, editPost, getPost, getAllPost, getAllPostById, likePost, unlikePost }
+async function deletePost(req: Request, res: Response) {
+  const { id } = req.params
+  const user = req.user
+
+  try {
+    const post = await Post.findById({ _id: id })
+    if (!post) throw new Error('Invalid PostID')
+
+    if (!post.createdBy.equals(user?._id.toString()!))
+      throw new Error('You can only delete your created Posts')
+
+    await Post.findByIdAndDelete({ _id: id })
+    return res.send('Post Deleted')
+  } catch (error: any) {
+    return res.send(error.message)
+  }
+}
+
+
+export {
+  createPost,
+  editPost,
+  getPost,
+  getAllPost,
+  getAllPostById,
+  likePost,
+  unlikePost,
+  deletePost
+}

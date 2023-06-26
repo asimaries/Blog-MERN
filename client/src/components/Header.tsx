@@ -41,7 +41,7 @@ const Header = () => {
   }, []);
 
   function logout() {
-    axios.post(`${import.meta.env.VITE_API_URL}/auth/logout`, {}, {
+    axios.post(`/auth/logout`, {}, {
       withCredentials: true,
     })
     setUser({
