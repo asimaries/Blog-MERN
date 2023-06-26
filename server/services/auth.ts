@@ -40,7 +40,7 @@ function validateRefreshToken(token: string) {
 
 function generateAccessToken(user: IUser): any {
   const payload = createPayload(user)
-  return JWT.sign(payload, `${process.env.ACCESS_TOKEN}`, { expiresIn: '60s' })
+  return JWT.sign(payload, `${process.env.ACCESS_TOKEN}`, { expiresIn: '1h' })
 }
 
 function generateRefreshToken(user: IUser): any {

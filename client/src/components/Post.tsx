@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
-import { useParams, Link } from "react-router-dom"
+import { useParams, Link, useNavigate } from "react-router-dom"
 import { UserContext } from "../context/user";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 import axios from "../api";
+
+
 
 export interface IPost {
   _id: string,
@@ -20,6 +22,7 @@ export interface IPost {
 
 export default function Post() {
 
+  const navigate = useNavigate()
   const { user } = useContext(UserContext)
   const { id } = useParams();
   const [userLiked, setUserLiked] = useState(false)
@@ -59,19 +62,37 @@ export default function Post() {
     if (likeRef.current)
       likeRef.current.classList.toggle('liked')
   }
+
+
+  function deletePost(e: React.MouseEvent<HTMLDivElement>) {
+    e.preventDefault()
+    const res = fetchAPI.delete(`post/${post._id}`)
+    res.then(() => {
+      return navigate(-1)
+    }).catch((err) => {
+      alert(err.message)
+    })
+
+  }
+
   // let like_button;
   // useEffect(() => {
   // }, [])
 
   return (
     <div>
-      {(user._id === post.createdBy._id) &&
-        <Link to={`/post/${post?._id}/edit`} className="edit-post-btn">Edit Post</Link>}
-
       {user._id ?
         <button ref={likeRef} className={`like-btn ${userLiked ? "liked" : ""}`} onClick={likePost}>Like {post.like.length}</button> :
         <div>Like {post.like.length} </div>
       }
+
+
+      {(user._id === post.createdBy._id) && <>
+        <Link to={`/post/${post?._id}/edit`} className="edit-post-btn">Edit Post</Link>
+        <div onClick={deletePost} className="edit-post-btn">Delete</div>
+      </>}
+
+
 
 
       <h1>{post?.title}</h1><h2>{post?.createdBy.account}</h2><p>{post?.summary}</p><img src={`${import.meta.env.VITE_API_URL}/${post?.cover}`} alt="" /><div className="content" dangerouslySetInnerHTML={{ __html: post?.content }} />

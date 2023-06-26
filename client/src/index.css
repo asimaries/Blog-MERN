@@ -39,16 +39,30 @@ header img {
   width: 200px;
 }
 
+
 button {
   background-color: inherit;
   border: none;
-  outline: none;
+  outline: solid;
+  outline-width: 1px;
   color: white;
   font-size: large;
+  border-radius: 2px;
+}
+
+button:hover {
+  cursor: pointer;
 }
 
 button.like-btn {}
 
 button.like-btn.liked {
   color: aqua;
+}
+
+.edit-post-btn {
+  display: inline;
+  margin: 10px;
+  border: solid 1px;
+  border-radius: 3px;
 }
