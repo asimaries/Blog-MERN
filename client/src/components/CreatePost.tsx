@@ -23,7 +23,9 @@ export default function CreatePost() {
       formData.set('content', content);
       if (file) formData.set('file', file);
 
-      const res = await fetchAPI.post('/post/create', formData)
+      const res = await fetchAPI.post('/post/create', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
 
       if (res.data) {
         setRedirect(res.data.postID);

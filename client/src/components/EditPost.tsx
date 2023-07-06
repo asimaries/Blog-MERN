@@ -40,12 +40,9 @@ export default function EditPost() {
     data.set('summary', summary);
     data.append('content', content);
     if (file) data.append('file', file);
-    const response = await fetchAPI.patch(`/post/${id}/edit`, data,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        }
-      });
+    const response = await fetchAPI.patch(`/post/${id}/edit`, data, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
 
     if (response.data) {
       setRedirect(response.data.postID);
