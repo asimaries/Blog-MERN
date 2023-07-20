@@ -16,7 +16,7 @@ const router = Router();
 
 router.post('/signup', validSignUp, handleSignUp)
 router.get('/verify/:id', emailVerificaton)
-router.get('google', googleOAuth)
+router.get('/google', googleOAuth)
 
 router.post('/signin', handleSignIn)
 router.post('/refresh', handleRefresh)

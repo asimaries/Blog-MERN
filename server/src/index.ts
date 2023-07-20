@@ -8,15 +8,15 @@ config()
 
 import AuthRouter from './routes/auth';
 import UserRouter from './routes/user';
-import PostRouter from './routes/post';
-import errorHandler from './middleware/errorHandler';
+import BlogRouter from './routes/blog';
+import { errorHandler } from './middleware/helper';
 import bodyParser from 'body-parser';
 
 
 const app: Application = express();
 const PORT = process.env.PORT || 7000;
 
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({ origin: process.env.BASE_URL, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
@@ -32,7 +32,7 @@ app.use('/', (req: Request, res: Response, next: NextFunction) => {
 // routers
 app.use('/auth', AuthRouter);
 app.use('/user', UserRouter);
-app.use('/post', PostRouter);
+app.use('/blog', BlogRouter);
 
 
 app.get('/', (req, res) => {
@@ -42,8 +42,8 @@ app.get('/', (req, res) => {
 
 
 // Databases
-connect(process.env.MONGODB_URL as string)
-  .then(() => {
-    app.listen(PORT, () => console.log(`http://localhost:${PORT}`))
-  })
-  .catch(error => console.log(error.message))
+app.listen(PORT, () => console.log(`http://localhost:${PORT}`))
+// connect(process.env.MONGODB_URL as string)
+//   .then(() => {
+//   })
+//   .catch(error => console.log(error.message))

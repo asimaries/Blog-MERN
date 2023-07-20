@@ -32,7 +32,7 @@ interface UserProviderProps {
   children: ReactNode
 }
 
-export default function UserContextProvider(props: UserProviderProps){
+export default function UserContextProvider(props: UserProviderProps) {
   const [user, setUser] = useState<User>({
     _id: '',
     account: '',
@@ -40,9 +40,9 @@ export default function UserContextProvider(props: UserProviderProps){
     role: '',
     avatar: '',
     accessToken: ''
-  }) 
+  })
   return (
-    <UserContext.Provider value={{user, setUser}}>
+    <UserContext.Provider value={{ user, setUser }}>
       {props.children}
     </UserContext.Provider>
   )

@@ -1,19 +1,18 @@
-import JWT, { SignOptions } from "jsonwebtoken"
-import { IUser } from "../models/user";
+import JWT, { Secret, SignOptions } from "jsonwebtoken"
+import { User } from "../controllers/blog";
 
-function createPayload(user: IUser): any {
+function createPayload(user: User): any {
 
   const payload = {
-    _id: user._id,
+    id: user.id,
     account: user.account,
     name: user.name,
-    role: user.role,
     avatar: user.avatar,
   }
   return payload;
 }
 
-function createToken(user: IUser): any {
+function createToken(user: User): any {
   user = createPayload(user)
   const accessToken = generateAccessToken(user)
   const refreshToken = generateRefreshToken(user)
@@ -21,7 +20,7 @@ function createToken(user: IUser): any {
 }
 
 async function validateAccessToken(token: string) {
-  return JWT.verify(token, process.env.ACCESS_TOKEN, async (error, user) => {
+  return JWT.verify(token, process.env.ACCESS_TOKEN  as Secret, async (error, user) => {
 
     if (user) return user;
 
@@ -35,15 +34,15 @@ async function validateAccessToken(token: string) {
 }
 
 function validateRefreshToken(token: string) {
-  return JWT.verify(token, process.env.REFRESH_TOKEN);
+  return JWT.verify(token, process.env.REFRESH_TOKEN as Secret);
 }
 
-function generateAccessToken(user: IUser): any {
+function generateAccessToken(user: User): any {
   const payload = createPayload(user)
   return JWT.sign(payload, `${process.env.ACCESS_TOKEN}`, { expiresIn: '1h' })
 }
 
-function generateRefreshToken(user: IUser): any {
+function generateRefreshToken(user: User): any {
   const payload = createPayload(user)
   return JWT.sign(payload, `${process.env.REFRESH_TOKEN}`, { expiresIn: '1d' })
 }

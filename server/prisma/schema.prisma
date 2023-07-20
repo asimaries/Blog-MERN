@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(uuid())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  name         String        @db.VarChar(100)
+  account      String        @unique @db.VarChar()
+  password     String
+  salt         String
+  avatar       String        @default("public/uploads/avatar.png")
+  verified     Boolean       @default(false)
+  blogs        Blog[]
+  comments     Comment[]
+  blogLikes    BlogLike[]
+  commentLikes CommentLike[]
+  Verification Verification?
+}
+
+model Blog {
+  // name datatype default 
+  id         String     @id @default(uuid())
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  title      String     @db.VarChar(100)
+  body       String     @db.Text
+  coverImage String     @db.VarChar()
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  comments   Comment[]
+  likes      BlogLike[]
+}
+
+model Comment {
+  id        String        @id @default(uuid())
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  message   String        @db.VarChar()
+  likes     CommentLike[]
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  blog      Blog          @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  blogId    String
+  parent    Comment?      @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId  String?
+  children  Comment[]     @relation("ParentChild")
+}
+
+model BlogLike {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  blogId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  @@id([userId, blogId])
+}
+
+model CommentLike {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  // id        String  @id @default(uuid())
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  @@id([userId, commentId])
+}
+
+model Verification {
+  id     String @id @default(uuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+  token  String @unique
+}
