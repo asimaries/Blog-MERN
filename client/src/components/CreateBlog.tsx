@@ -4,31 +4,31 @@ import { Navigate } from "react-router-dom";
 import Editor from "./Editor";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
-export default function CreatePost() {
+export default function CreateBlog() {
 
   const [title, setTitle] = useState<string>('')
   const [summary, setSummary] = useState<string>('')
-  const [content, setContent] = useState<string>('')
+  const [body, setBody] = useState<string>('')
   const [file, setFile] = useState<File>()
   const [redirect, setRedirect] = useState<string>()
 
   const fetchAPI = useAxiosPrivate()
 
-  async function createNewPost(e: React.FormEvent<HTMLFormElement>) {
+  async function createNewBlog(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     try {
       const formData = new FormData();
       formData.set('title', title);
       formData.set('summary', summary);
-      formData.set('content', content);
+      formData.set('body', body);
       if (file) formData.set('file', file);
 
-      const res = await fetchAPI.post('/post/create', formData, {
+      const res = await fetchAPI.post('/blog/create', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
 
       if (res.data) {
-        setRedirect(res.data.postID);
+        setRedirect(res.data.blogID);
       } else {
         alert('Error')
       }
@@ -38,8 +38,8 @@ export default function CreatePost() {
 
   }
   return (
-    redirect ? <Navigate to={`/post/${redirect}`} /> : <>
-      <form onSubmit={createNewPost}>
+    redirect ? <Navigate to={`/blog/${redirect}`} /> : <>
+      <form onSubmit={createNewBlog}>
 
         <input type="title"
           placeholder="title"
@@ -55,10 +55,10 @@ export default function CreatePost() {
           onChange={(e) => setFile(e.target.files?.[0])} />
 
         <Editor
-          content={content}
-          setContent={setContent} />
+          body={body}
+          setBody={setBody} />
 
-        <button>Create Post</button>
+        <button>Create Blog</button>
       </form>
     </>
   )

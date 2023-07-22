@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 // import { Blog, IBlog } from "../models/blog";
-import { PrismaClient } from "@prisma/client";
-const { blog: Blog } = new PrismaClient()
+import { PrismaClient, PrismaPromise } from "@prisma/client";
+const { blog: Blog, commentLike } = new PrismaClient()
 
 
 export type User = {
@@ -10,6 +10,19 @@ export type User = {
   name: string,
   avatar: string,
 }
+const COMMENT_SELECT_FIELDS = {
+  id: true,
+  message: true,
+  parentId: true,
+  createdAt: true,
+  user: {
+    select: {
+      id: true,
+      name: true
+    }
+  }
+}
+
 
 async function createBlog(req: Request, res: Response) {
 
@@ -79,7 +92,7 @@ async function editBlog(req: Request, res: Response) {
 }
 
 async function getBlog(req: Request, res: Response) {
-  const { id } = req.params;
+  /* const { id } = req.params;
   try {
     let blog = await Blog
       .findUniqueOrThrow({
@@ -89,12 +102,81 @@ async function getBlog(req: Request, res: Response) {
           title: true,
           body: true,
           coverImage: true,
+          user: {
+            select: { account: true }
+          }
         }
       })
     // .populate('createdBy', 'account createdAt')
     // .populate('like', '')
-
+    console.log(blog)
     return res.status(200).json(blog);
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ message: 'internal server error' })
+  } */
+
+  const { id } = req.params
+  try {
+    const blog = await Blog.findUniqueOrThrow({
+      where: { id },
+      select: {
+        body: true,
+        title: true,
+        comments: {
+          orderBy: {
+            createdAt: 'desc'
+          },
+          select: {
+            ...COMMENT_SELECT_FIELDS,
+            _count: {
+              select: {
+                likes: true
+              }
+            }
+          }
+        }
+      }
+    }).then(async (blog) => {
+      let commentLikedByMe = undefined
+      console.log(req.user)
+      if (req.user) {
+        const commentLikes = await commentLike.findMany({
+          where: {
+            userId: req.user.id,
+            commentId: {
+              in: blog.comments.map((comment: any) => comment.id)
+            }
+          }
+        })
+        return {
+          ...blog,
+          comments: blog.comments.map((comment: any) => {
+            const { _count, ...commentFields } = comment
+            // console.log(commentFields)
+            return {
+              ...commentFields,
+              commentLikedByMe: commentLikes.find(commentLike => commentLike.userId === commentFields.user.id),
+              commentLikeCount: _count.likes
+            }
+          })
+        }
+      } else {
+        return {
+          ...blog,
+          comments: blog.comments.map((comment: any) => {
+            const { _count, ...commentFields } = comment
+            return {
+              ...commentFields,
+              commentLikedByMe: false,
+              commentLikeCount: _count.likes
+            }
+          })
+        }
+      }
+    })
+    // console.log(blog)
+    return res.json(blog)
   } catch (error) {
     console.log(error)
     return res.status(500).json({ message: 'internal server error' })
@@ -110,13 +192,19 @@ async function getAllBlog(req: Request, res: Response) {
         title: true,
         body: true,
         coverImage: true,
+        createdAt: true,
+        user: {
+          select: {
+            account: true
+          }
+        }
       }, orderBy: {
         createdAt: 'desc',
       },
       take: 10
     })
 
-
+    // console.log(blogs)
     // .find({}, { content: 0 })
     // .populate('createdBy', 'account createdAt')
     // .sort({ createdAt: -1 })
@@ -133,19 +221,26 @@ async function getAllBlogOfUser(req: Request, res: Response) {
     const blogs = await Blog
       .findMany({
         where: {
-          userId: id,
+          user: {
+            account: id
+          }
         },
         select: {
           title: true,
           body: true,
           id: true,
+          user: {
+            select: { account: true }
+          },
           coverImage: true,
+          createdAt: true
         },
         orderBy: {
           createdAt: "desc",
         },
         take: 5
       })
+    // console.log('155', blogs)
     // .find({}, { content: 0 })
     // .populate({
     //   path: 'createdBy',
@@ -164,6 +259,7 @@ async function getAllBlogOfUser(req: Request, res: Response) {
 
     return res.status(error.cause.code).json({ message: error.message })
   }
+
 }
 /* 
 async function likeBlog(req: Request, res: Response) {
@@ -221,6 +317,16 @@ async function deleteBlog(req: Request, res: Response) {
   }
 }
 
+async function commitToDB(promise: PrismaPromise<any>) {
+  const [error, data] = await promise
+    .then(data => [null, data])
+    .catch(error => [error, null])
+  if (error) {
+    console.log(error.message)
+    return error.message
+  }
+  return data
+}
 
 export {
   createBlog,

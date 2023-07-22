@@ -20,7 +20,7 @@ function createToken(user: User): any {
 }
 
 async function validateAccessToken(token: string) {
-  return JWT.verify(token, process.env.ACCESS_TOKEN  as Secret, async (error, user) => {
+  return JWT.verify(token, process.env.ACCESS_TOKEN as Secret, async (error, user) => {
 
     if (user) return user;
 

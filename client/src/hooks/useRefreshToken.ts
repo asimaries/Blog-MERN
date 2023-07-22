@@ -1,9 +1,9 @@
 import { useContext } from "react";
-import { UserContext, UserContextType } from "../context/user";
+import { useUser } from "../context/user";
 import axios from "axios";
 
 const useRefreshToken = () => {
-  const { setUser } = useContext<UserContextType>(UserContext)
+  const { setUser } = useUser()
 
   const refresh = async () => {
     const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/refresh`, {}, {

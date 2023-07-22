@@ -14,7 +14,7 @@ import { PrismaClient } from '@prisma/client'
 import { randomBytes, createHmac } from "crypto";
 // import verifyModel from "models/verify";
 // const prisma = new PrismaClient({ log: ['query'] })
-const { user: User, verification: Verification } = new PrismaClient({ log: ['query'] })
+const { user: User, verification: Verification } = new PrismaClient()
 
 type UserRequestPayload = { name?: string, account: string, password: string };
 /**
@@ -105,7 +105,7 @@ async function handleSignIn(req: Request, res: Response) {
       .json({ user, accessToken });
 
   } catch (error: any) {
-    console.error(error)
+    // console.error(error)
     if (!(error.cause.code))
       return res.status(500).json({ message: "Internal server error ", cause: error.message })
 

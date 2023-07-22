@@ -2,58 +2,58 @@ import React, { useState, useEffect, useContext } from "react"
 // import FormData from "form-data";
 import { Navigate, useParams } from "react-router-dom";
 import Editor from "./Editor";
-import { UserContext, UserContextType } from "../context/user";
+import { useUser } from "../context/user";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
-export default function EditPost() {
+export default function EditBlog() {
 
-  const { user } = useContext<UserContextType>(UserContext)
+  const { user } = useUser()
 
   const { id } = useParams()
   const [title, setTitle] = useState<string>('')
   const [summary, setSummary] = useState<string>('')
-  const [content, setContent] = useState<string>('')
+  const [body, setBody] = useState<string>('')
   const [file, setFile] = useState<File | undefined>()
   const [redirect, setRedirect] = useState<string | null>(null)
 
   const fetchAPI = useAxiosPrivate()
-  const getPost = async () => {
-    // const res = await fetch(`${import.meta.env.VITE_API_URL}/post/${id}`)
-    // const respost = await res.json();
-    const respost = await fetchAPI.get(`/post/${id}`)
-    setTitle(respost.data?.title)
-    setSummary(respost.data?.summary)
-    setContent(respost.data?.content)
-    setFile(respost.data?.cover)
+  const getBlog = async () => {
+    // const res = await fetch(`${import.meta.env.VITE_API_URL}/blog/${id}`)
+    // const resblog = await res.json();
+    const resblog = await fetchAPI.get(`/blog/${id}`)
+    setTitle(resblog.data?.title)
+    setSummary(resblog.data?.summary)
+    setBody(resblog.data?.body)
+    setFile(resblog.data?.cover)
   }
 
   useEffect(() => {
-    getPost()
+    getBlog()
   }, [user.name])
 
 
-  async function editNewPost(e: React.FormEvent) {
+  async function editNewBlog(e: React.FormEvent) {
 
     e.preventDefault()
     const data = new FormData();
     data.set('title', title);
     data.set('summary', summary);
-    data.append('content', content);
+    data.append('body', body);
     if (file) data.append('file', file);
-    const response = await fetchAPI.patch(`/post/${id}/edit`, data, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+    const response = await fetchAPI.patch(`/blog/${id}/edit`, data, {
+      headers: { 'Body-Type': 'multipart/form-data' }
     });
 
     if (response.data) {
-      setRedirect(response.data.postID);
+      setRedirect(response.data.blogID);
     } else {
       alert('Error')
     }
   }
 
-  if (redirect) return <Navigate to={`/post/${redirect}`} />
+  if (redirect) return <Navigate to={`/blog/${redirect}`} />
   return (
-    <form onSubmit={editNewPost}>
+    <form onSubmit={editNewBlog}>
 
       <input type="title"
         placeholder="title"
@@ -69,10 +69,10 @@ export default function EditPost() {
         onChange={(e) => setFile(e.target.files?.[0])} />
 
       <Editor
-        content={content}
-        setContent={setContent} />
+        body={body}
+        setBody={setBody} />
 
-      <button>Edit Post</button>
+      <button>Edit Blog</button>
 
     </form>
   )

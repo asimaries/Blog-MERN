@@ -9,6 +9,7 @@ config()
 import AuthRouter from './routes/auth';
 import UserRouter from './routes/user';
 import BlogRouter from './routes/blog';
+import CommentRouter from './routes/comment';
 import { errorHandler } from './middleware/helper';
 import bodyParser from 'body-parser';
 
@@ -33,6 +34,7 @@ app.use('/', (req: Request, res: Response, next: NextFunction) => {
 app.use('/auth', AuthRouter);
 app.use('/user', UserRouter);
 app.use('/blog', BlogRouter);
+app.use('/comment', CommentRouter);
 
 
 app.get('/', (req, res) => {
