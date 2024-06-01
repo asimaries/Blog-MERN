@@ -27,3 +27,4 @@ public/uploads/*
 !public/uploads/avatar.png
 
 .env
+/build

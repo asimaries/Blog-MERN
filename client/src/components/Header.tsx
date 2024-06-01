@@ -2,13 +2,14 @@ import { useEffect, useContext, useState } from "react"
 import { Link } from "react-router-dom"
 import Cookies from 'js-cookie';
 import jwtDecode from "jwt-decode";
-import axios from "../api";
-import { UserContext, UserContextType } from "../context/user"
+import { api } from "../api";
+import { useUser } from "../context/user"
 import useRefreshToken from "../hooks/useRefreshToken";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 const Header = () => {
 
-  const { user, setUser }: UserContextType = useContext<UserContextType>(UserContext)
+
+  const { user, setUser } = useUser()
 
   const [runGetProfile, setRunGetProfile] = useState(false)
   const refresh = useRefreshToken()
@@ -30,6 +31,18 @@ const Header = () => {
     getProfile()
   }, [runGetProfile])
 
+  function logout() {
+    api.post(`/auth/logout`, {}, {
+      withCredentials: true,
+    })
+    setUser({
+      id: '',
+      account: '',
+      name: '',
+      avatar: '',
+      accessToken: ''
+    })
+  }
 
   useEffect(() => {
     const token = Cookies.get('token');
@@ -40,19 +53,6 @@ const Header = () => {
     }
   }, []);
 
-  function logout() {
-    axios.post(`/auth/logout`, {}, {
-      withCredentials: true,
-    })
-    setUser({
-      _id: '',
-      account: '',
-      name: '',
-      role: '',
-      avatar: '',
-      accessToken: ''
-    })
-  }
   const userLive = user.name
   return (
     <>

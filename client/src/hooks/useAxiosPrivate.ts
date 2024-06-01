@@ -1,21 +1,21 @@
 import { useContext, useEffect } from 'react';
 // import axios from 'axios';
 
-import { UserContext, UserContextType } from "../context/user";
+import { useUser } from "../context/user";
 import jwtDecode from 'jwt-decode';
 import useRefreshToken from './useRefreshToken';
-import { privateAPI } from '../api';
+import { api } from '../api';
 
 const useAxiosPrivate = () => {
 
-  const { user }: UserContextType = useContext<UserContextType>(UserContext)
+  const { user } = useUser()
   const refresh = useRefreshToken()
 
 
   useEffect(() => {
 
-    const requestIntercept = privateAPI.interceptors.request.use(
-      async (config) => {
+    const requestIntercept = api.interceptors.request.use(
+      async (config: any) => {
         {
           if (!config.headers.Authorization)
             config.headers.Authorization = `Bearer ${user.accessToken}`
@@ -31,28 +31,28 @@ const useAxiosPrivate = () => {
       (error: any) => Promise.reject(error)
     )
 
-    const responseIntercept = privateAPI.interceptors.response.use(
-      response => response,
-      async (error) => {
+    const responseIntercept = api.interceptors.response.use(
+      (response: any) => response,
+      async (error: any) => {
         const prevRequest = error.config
-        if (error?.response.status === 403 && !prevRequest.sent) {
+        if (error?.response?.status === 403 && !prevRequest.sent) {
           prevRequest.sent = true
           const newAccessToken = await refresh();
           prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`
-          return privateAPI(prevRequest)
+          return api(prevRequest)
         }
         return Promise.reject(error)
       }
     )
 
     return () => {
-      privateAPI.interceptors.request.eject(requestIntercept)
-      privateAPI.interceptors.response.eject(responseIntercept)
+      api.interceptors.request.eject(requestIntercept)
+      api.interceptors.response.eject(responseIntercept)
     }
   }, [user, refresh])
 
 
-  return privateAPI
+  return api
 }
 
 

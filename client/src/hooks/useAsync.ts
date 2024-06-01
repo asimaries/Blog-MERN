@@ -1,61 +1,45 @@
 import { useCallback, useEffect, useState } from "react";
 
-type AsyncFunc<T> = (...params: any[]) => Promise<T>;
-
 interface AsyncState<T> {
   loading: boolean;
-  error: any;
-  value: T | undefined;
-  execute: AsyncFunc<T>;
+  error?: Error;
+  value?: T;
+  execute?: (...params: any[]) => Promise<T>
 }
 
-export function useAsync<T>(
-  func: AsyncFunc<T>,
-  dependencies: any[] = []
-): AsyncState<T> {
-  const { execute, ...state } = useAsyncInternal<T>(func, dependencies, true);
+export function useAsync<T>(func: (...params: any[]) => Promise<T>, dependencis: any[] = []): AsyncState<T> {
+  const { execute, ...state } = useAsyncInternal(func, dependencis, true)
 
   useEffect(() => {
-    execute();
-  }, [execute]);
-
-  return { ...state, execute };
+    execute!()
+  }, [execute])
+  return state
 }
 
-export function useAsyncFn<T>(
-  func: AsyncFunc<T>,
-  dependencies: any[] = []
-): AsyncState<T> {
-  return useAsyncInternal<T>(func, dependencies, false);
+export function useAsyncFn<T>(func: (...params: any[]) => Promise<T>, dependencis: any[] = []): AsyncState<T> {
+  return useAsyncInternal(func, dependencis, false)
 }
 
-function useAsyncInternal<T>(
-  func: AsyncFunc<T>,
-  dependencies: any[],
-  initialLoading = false
-): AsyncState<T> {
-  const [loading, setLoading] = useState(initialLoading);
-  const [error, setError] = useState<any>();
-  const [value, setValue] = useState<T | undefined>();
+function useAsyncInternal<T>(func: (...params: any[]) => Promise<T>, dependencis: any[] = [], initialLoading = false): AsyncState<T> {
+  const [loading, setLoading] = useState(initialLoading)
+  const [error, setError] = useState<Error>()
+  const [value, setValue] = useState<T>()
 
-  const execute = useCallback(
-    (...params: any[]): Promise<T> => {
-      setLoading(true);
-      return func(...params)
-        .then((data: T) => {
-          setValue(data);
-          setError(undefined);
-          return data;
-        })
-        .catch((error: any) => {
-          setError(error);
-          setValue(undefined);
-          return Promise.reject(error);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }, dependencies);
 
-  return { loading, error, value, execute };
+  const execute = useCallback((...params: any[]) => {
+    setLoading(true)
+    return func(...params).then(data => {
+      setValue(data)
+      setError(undefined)
+      return data
+    }).catch(error => {
+      setValue(undefined)
+      setError(error)
+      return Promise.reject(error)
+    }).finally(() => {
+      setLoading(false)
+    })
+  }, dependencis)
+
+  return { loading, error, value, execute }
 }

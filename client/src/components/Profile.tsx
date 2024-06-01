@@ -1,22 +1,24 @@
 import { useEffect, useContext, useState } from "react"
 import { useParams } from "react-router-dom"
 
-import { UserContext, UserContextType } from "../context/user"
-import { PostCardProp } from "./Home";
-import PostCard from "./PostCard";
-import axios from "../api";
+import { useUser } from "../context/user"
+import { IBlog } from "./Home";
+import BlogCard from "./BlogCard";
+import { api, getUserBlog } from "../api";
+import { useAsyncFn } from "../hooks/useAsync";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 
 export default function Profile() {
   const { id } = useParams<{ id: string }>();
-  const { user } = useContext<UserContextType>(UserContext)
+  const { user } = useUser()
   const [profile, setProfile] = useState(user)
-  const [allPost, setAllPost] = useState<PostCardProp[]>([{
-    _id: '',
+  const [allBlog, setAllBlog] = useState<IBlog[]>([{
+    id: '',
     title: '',
-    summary: '',
-    cover: '',
-    createdBy: {
+    body: '',
+    coverImage: '',
+    user: {
       account: '',
     },
     createdAt: new Date(),
@@ -24,32 +26,26 @@ export default function Profile() {
   // const fetchAPI = useAxiosPrivate()
 
   useEffect(() => {
-    axios.get(`/post/allPost/${id}`).then(res => {
-      setAllPost(res.data)
+    api.get(`/blog/allBlog/${id}`).then(res => {
+      setAllBlog(res.data)
     })
-    if (id === user.account)
-      return setProfile(user)
-    axios.get(`/user/profile/${id}`)
+    api.get(`/user/profile/${id}`)
       .then(res => {
         setProfile(res.data)
       })
 
   }, [id, user])
 
-
-
-
-
   return (
     <div className="profile">
-      <img src={`${import.meta.env.VITE_API_URL}/${profile.avatar.toString()}`} alt="" className="h-80" />
+      <img src={`${import.meta.env.VITE_API_URL}/${profile.avatar}`} alt="" className="h-80" />
 
       <h3>{profile.name}</h3>
       <h3>{profile.account}</h3>
-      <h3>{profile.role}</h3>
+      {/* <h3>{profile.role}</h3> */}
 
-      {allPost.map((post, key) => {
-        return <PostCard key={key} {...post} />
+      {allBlog.map((blog, key) => {
+        return <BlogCard key={key} {...blog} />
       })}
 
     </div>

@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import PostCard from "./PostCard";
-import axios from "../api";
+import BlogCard from "./BlogCard";
+import { api, getBlogs } from "../api";
+import { useAsync } from "../hooks/useAsync";
 
-export interface PostCardProp {
-  _id: string,
+export interface IBlog {
+  id: string,
   title: string,
-  summary: string,
-  cover: string,
-  createdBy: {
+  body: string,
+  coverImage: string,
+  user: {
     account: string,
   },
   createdAt: Date,
@@ -15,29 +16,32 @@ export interface PostCardProp {
 
 
 function Home() {
-  const [allPost, setAllPost] = useState<PostCardProp[]>([{
-    _id: '',
-    title: '',
-    summary: '',
-    cover: '',
-    createdBy: {
-      account: '',
-    },
-    createdAt: new Date(),
-  }])
 
-  const getAllPost = async () => {
-    const res = await axios.get(`/post/allPost`)
-    setAllPost(res.data)
-  }
-  useEffect(() => {
-    getAllPost()
-  }, [])
+  //   const [allBlog, setAllBlog] = useState<IBlog[]>([{
+  //     id: '',
+  //     title: '',
+  //     cover: '',
+  //     createdBy: {
+  //       account: '',
+  //     },
+  //     createdAt: new Date(),
+  //   }])
+  //   const getAllBlog = async () => {
+  //     const res = await axios.get(`/blog/allBlog`)
+  //     console.log(res.data)
+  //     setAllBlog(res.data)
+  //   }
+  //   useEffect(() => {
+  //     getAllBlog()
+  //   }, [])
 
+  const { loading, error, value: allBlogs } = useAsync<IBlog[]>(getBlogs)
 
+  if (loading) return <h1>Loading...</h1>
+  if (error) return <h2 className="error-msg">{error.message}</h2>
   return (
     <div className="home">
-      {allPost.map((item, key) => <PostCard key={key} {...item} />)}
+      {allBlogs!.map((item, key) => <BlogCard key={key} {...item} />)}
     </div>
   )
 }

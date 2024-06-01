@@ -19,16 +19,16 @@ const formats = [
 ]
 
 interface EditorProp {
-  content: string,
-  setContent: React.Dispatch<React.SetStateAction<string>>,
+  body: string,
+  setBody: React.Dispatch<React.SetStateAction<string>>,
 }
 
-export default function Editor({ content, setContent }: EditorProp) {
+export default function Editor({ body, setBody }: EditorProp) {
   return (
     <ReactQuill
       theme="snow"
-      value={content}
-      onChange={setContent}
+      value={body}
+      onChange={setBody}
       formats={formats}
       modules={modules} />
   )

@@ -8,12 +8,12 @@ import Profile from "./components/Profile";
 import Recovery from "./components/Recovery";
 import Reset from "./components/Reset";
 import PageNotFound from "./components/PageNotFound";
-import Post from "./components/Post";
-import EditPost from "./components/EditPost";
+import Blog from "./components/Blog";
+import EditBlog from "./components/EditBlog";
 import UserContextProvider from './context/user';
-import CreatePost from './components/CreatePost';
+import CreateBlog from './components/CreateBlog';
 import Verify from './components/verify';
-
+import BlogProvider from './context/BlogContext'
 
 function App() {
 
@@ -27,11 +27,15 @@ function App() {
           <Route path={'signup'} element={<SignUp />} />
           <Route path={'verify/:token'} element={<Verify />} />
           <Route path={'profile/:id'} element={<Profile />} />
-          <Route path={'post/:id'} element={<Post />} />
-          <Route path={'post/:id/edit'} element={<EditPost />} />
+          <Route path={'blog/:id'} element={
+            <BlogProvider>
+              <Blog />
+            </BlogProvider>
+          } />
+          <Route path={'blog/:id/edit'} element={<EditBlog />} />
           <Route path={'recovery'} element={<Recovery />} />
           <Route path={'reset'} element={<Reset />} />
-          <Route path={'create'} element={<CreatePost />} />
+          <Route path={'create'} element={<CreateBlog />} />
           <Route path={'*'} element={<PageNotFound />} />
         </Route>
       </Routes>
