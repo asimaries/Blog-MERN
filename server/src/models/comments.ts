@@ -18,7 +18,7 @@ interface ILike extends Document {
 }
 
 
-const commentSchema = new Schema<IComment>({
+/*const commentSchema = new Schema<IComment>({
   message: String,
   user: {
     type: Schema.Types.ObjectId,
@@ -57,4 +57,4 @@ const likeSchema = new Schema<ILike>({
 const CommentModel = model<IComment>('Comment', commentSchema);
 const LikeModel = model<ILike>('Like', likeSchema);
 
-export { CommentModel, LikeModel }
+export { CommentModel, LikeModel } */

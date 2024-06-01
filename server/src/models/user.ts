@@ -2,16 +2,16 @@ import { createHmac, randomBytes } from "crypto";
 // import { Document, Schema, model, Model } from "mongoose";
 import { createToken } from "../services/auth";
 
-// export interface IUser extends Document {
-//   id: string,
-//   name: string,
-//   account: string,
-//   salt: string,
-//   avatar: string,
-//   role: string,
-//   password: string,
-//   verified: boolean
-// }
+export interface IUser extends Document {
+  _id: string,
+  name: string,
+  account: string,
+  salt: string,
+  avatar: string,
+  role: string,
+  password: string,
+  verified: boolean
+}
 
 // export interface UserModel extends Model<IUser> {
 //   matchPasswordAndgenerateVerificationToken(account: string, password: string): string,
